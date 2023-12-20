@@ -50,7 +50,7 @@ export default function MainView({
       date.setDate(date.getDate() + 1);
     }
     const twentyPercent = isRounded
-      ? Math.ceil(count * (percentage / 100))
+      ? Math.floor(count * (percentage / 100))
       : parseFloat((count * (percentage / 100)).toFixed(1));
     return { total: count, twentyPercent };
   }
