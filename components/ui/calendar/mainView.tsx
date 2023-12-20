@@ -60,9 +60,9 @@ export default function MainView({
   );
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 gap-4">
+    <main className="flex min-h-screen flex-col items-center justify-between gap-4 container py-20">
       <p className="font-medium">Days designated for office work</p>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6 h-36">
         <Link href={`/${Number(year) - 1}`}>
             <button className="p-2 bg-secondary rounded-lg">
                 <ChevronLeft strokeWidth={2.25} />
