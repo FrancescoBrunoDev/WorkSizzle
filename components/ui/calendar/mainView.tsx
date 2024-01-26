@@ -26,9 +26,9 @@ function formatDate(date: Date) {
     day = '' + d.getDate(),
     year = d.getFullYear();
 
-  if (month.length < 2) 
+  if (month.length < 2)
     month = '0' + month;
-  if (day.length < 2) 
+  if (day.length < 2)
     day = '0' + day;
 
   return [year, month, day].join('-');
@@ -42,6 +42,7 @@ export default function MainView({
   year: number;
 }) {
   const [isRounded, setIsRounded] = useState(false);
+  const [isEven, setIsEven] = useState(false);
   const [percentage, setPercentage] = useState(20);
   const holidaysForYear = holidays.map((holiday) => {
     if (holiday.counties === null || holiday.counties.includes("DE-BY")) {
@@ -105,6 +106,8 @@ export default function MainView({
         setIsRounded={setIsRounded}
         percentage={percentage}
         setPercentage={setPercentage}
+        isEven={isEven}
+        setIsEven={setIsEven}
       />
       <Separator />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-1 w-full">
@@ -116,9 +119,8 @@ export default function MainView({
           return (
             <div
               key={index}
-              className={`border rounded-sm p-4 ${
-                index % 2 === 0 ? "border-l-4" : "border-r-4"
-              }`}
+              className={`border rounded-sm p-4 ${index % 2 === 0 ? `${isEven ? "border-l-4" : "border-r-4"}` : `${isEven ? "border-r-4" : "border-l-4"}`
+                }`}
             >
               <h2 className="font-bold">
                 {new Date(year, index).toLocaleString("en-US", {
