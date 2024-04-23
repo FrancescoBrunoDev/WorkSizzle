@@ -85,7 +85,7 @@ export default function MainView({
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between gap-4 container pt-64 md:pt-80 pb-12">
+    <main className="flex min-h-screen flex-col items-center justify-between gap-4 container pt-72 md:pt-80 pb-12">
       <Controls
         isRounded={isRounded}
         setIsRounded={setIsRounded}
