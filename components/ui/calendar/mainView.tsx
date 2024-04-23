@@ -85,22 +85,7 @@ export default function MainView({
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between gap-4 container py-20">
-      <p className="font-medium">Days designated for office work</p>
-      <div className="flex items-center gap-6 h-36">
-        <Link href={`/${Number(year) - 1}`}>
-          <button className="p-2 bg-secondary rounded-lg">
-            <ChevronLeft strokeWidth={2.25} />
-          </button>
-        </Link>
-        <h1 className="font-black text-8xl">{year}</h1>
-        <Link href={`/${Number(year) + 1}`}>
-          <button className="p-2 bg-secondary rounded-lg">
-            <ChevronRight strokeWidth={2.25} />
-          </button>
-        </Link>
-      </div>
-      <Separator />
+    <main className="flex min-h-screen flex-col items-center justify-between gap-4 container pt-64 md:pt-80 pb-12">
       <Controls
         isRounded={isRounded}
         setIsRounded={setIsRounded}
@@ -108,8 +93,8 @@ export default function MainView({
         setPercentage={setPercentage}
         isEven={isEven}
         setIsEven={setIsEven}
+        year={year}
       />
-      <Separator />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-1 w-full">
         <div />
         {workingDaysInMonths.map((days, index) => {

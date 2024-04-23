@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
+import Navbar from "@/components/ui/navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -8,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "BSB flexiWork Calculator",
-  description: "Calculate your flexiWork days",
+  title: "WorkSizzle",
+  description: "Calculate the optimal number of on-site workdays based on your remote work allowance percentage for each month.",
 };
 
 export default function RootLayout({
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className="min-h-screen bg-background font-sans antialiased">
+        <Navbar />
         {children}
       </body>
     </html>
