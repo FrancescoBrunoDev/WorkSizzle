@@ -6,13 +6,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function DateSelector({ year }: { year: number }) {
   return (
-    <div className="flex items-center gap-4 bg-secondary border-secondary p-1 rounded-lg">
+    <div className="flex items-center gap-2 bg-secondary border-secondary p-1 rounded-lg">
       <Link href={`/${Number(year) - 1}`}>
         <button className="p-1 bg-background rounded-lg">
           <ChevronLeft strokeWidth={2.25} />
         </button>
       </Link>
-      <h1 className="text-lg font-bold">{year}</h1>
+      <h1 className="text-xl font-black">{year}</h1>
       <Link href={`/${Number(year) + 1}`}>
         <button className="p-1 bg-background rounded-lg">
           <ChevronRight strokeWidth={2.25} />
