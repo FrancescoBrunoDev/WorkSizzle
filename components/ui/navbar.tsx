@@ -28,18 +28,16 @@ export default function Navbar() {
       className={`fixed top-0 z-50 flex w-full flex-col justify-center bg-background text-center`}
     >
       <h1
-        className={`font-black text-primary ${
-          isTop
-            ? "-rotate-3 pt-12 text-5xl md:text-9xl"
-            : "py-2 text-2xl lg:text-5xl"
-        } transition-all`}
+        className={`font-black text-primary ${isTop
+          ? "-rotate-3 pt-12 text-6xl xs:text-7xl sm:text-8xl md:text-9xl"
+          : "py-2 text-4xl lg:text-5xl"
+          } transition-all`}
       >
         WorkSizzle
       </h1>
       <div
-        className={`flex w-full justify-center p-12 text-base font-medium ${
-          isTop ? "block" : "hidden"
-        }`}
+        className={`flex w-full justify-center p-12 text-base font-medium ${isTop ? "block" : "hidden"
+          }`}
       >
         <p className="max-w-2xl text-center">
           Calculate the optimal number of on-site workdays based on your remote

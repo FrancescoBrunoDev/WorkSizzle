@@ -3,18 +3,8 @@
 import { useState, useEffect } from "react";
 import Controls from "@/components/ui/calendar/controls";
 import { Calendar } from "@/components/ui/calendar";
+import { toast } from "sonner"
 
-interface holiday {
-  date: string;
-  localName: string;
-  name: string;
-  countryCode: string;
-  fixed: boolean;
-  global: boolean;
-  counties: string[] | null;
-  launchYear: number | null;
-  type: string;
-}
 
 // https://stackoverflow.com/a/23593099
 function formatDate(date: Date) {
@@ -29,11 +19,55 @@ function formatDate(date: Date) {
   return [year, month, day].join("-");
 }
 
+async function getHoliday(year: number, country: string) {
+  try {
+    const res = await fetch(
+      `https://date.nager.at/api/v3/publicholidays/${year}/${country}`,
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    toast.success("Good news", {
+      description: "The data regarding the holidays has been updated.",
+    })
+    return data;
+  } catch (error) {
+    console.error("Error fetching holidays:", error);
+    // Optionally, return a default value or handle the error as needed
+    toast.error("Bad news", {
+      description: "I have no data about holidays for this country.",
+    })
+    return []; // Return an empty array as a fallback
+  }
+}
+
+function getSubCountries(holidays: holiday[]) {
+  if (!holidays || holidays.length === 0) {
+    return [];
+  }
+
+  const subCountries = holidays.map((holiday) => holiday.counties).flat();
+  const uniqueSubCountries = Array.from(new Set(subCountries.filter(Boolean)));
+
+  const structuredSubCountries = uniqueSubCountries.map((code, index) => ({
+    id: index + 1,
+    alpha2: code
+  }));
+
+  // Add the "all" entry at the beginning of the array
+  if (structuredSubCountries.length > 0) {
+    structuredSubCountries.unshift({ id: 0, alpha2: "all" });
+  }
+
+  return structuredSubCountries;
+}
+
 export default function MainView({
-  holidays,
   year,
 }: {
-  holidays: holiday[];
   year: number;
 }) {
   // existing state variables
@@ -57,6 +91,18 @@ export default function MainView({
       ? JSON.parse(localStorage.getItem("percentage") || "20")
       : 20,
   );
+  const [country, setCountry] = useState(
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("country") || '"DE"')
+      : "DE",
+  );
+  const [subCountries, setSubCountries] = useState<country[]>([]);
+  const [subCountry, setSubCountry] = useState(
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("subCountry") || '"all"')
+      : "all",
+  );
+  const [holidays, setHolidays] = useState<holiday[]>([]);
 
   // useEffect to save state variables to local storage
   useEffect(() => {
@@ -67,10 +113,20 @@ export default function MainView({
       JSON.stringify(areCalendarsCollapsed),
     );
     localStorage.setItem("percentage", JSON.stringify(percentage));
-  }, [isRounded, isEven, areCalendarsCollapsed, percentage]);
+    localStorage.setItem("country", JSON.stringify(country));
+    localStorage.setItem("subCountry", JSON.stringify(subCountry));
+  }, [isRounded, isEven, areCalendarsCollapsed, percentage, country, subCountry]);
+
+  useEffect(() => {
+    getHoliday(year, country).then((data) => {
+      setHolidays(data);
+      const arraySubCountries: country[] = getSubCountries(data)
+      setSubCountries(arraySubCountries);
+    })
+  }, [year, country]);
 
   const holidaysForYear = holidays.map((holiday) => {
-    if (holiday.counties === null || holiday.counties.includes("DE-BY")) {
+    if (holiday.counties === null || holiday.counties.includes(subCountry)) {
       return holiday.date;
     }
   });
@@ -124,9 +180,14 @@ export default function MainView({
         year={year}
         areCalendarsCollapsed={areCalendarsCollapsed}
         setAreCalendarsCollapsed={setAreCalendarsCollapsed}
+        country={country}
+        setCountry={setCountry}
+        subCountries={subCountries}
+        subCountry={subCountry}
+        setSubCountry={setSubCountry}
       />
-      <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-3">
-        <div />
+      <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="hidden lg:block" />
         {workingDaysInMonths.map((days, index) => {
           const monthHolidays = holidaysForYear.filter(
             (holiday) => new Date(holiday ?? "").getMonth() === index,
@@ -134,11 +195,10 @@ export default function MainView({
           return (
             <div
               key={index}
-              className={`rounded-sm border border-primary/50 p-4 ${
-                index % 2 === 0
-                  ? `${isEven ? "border-l-4" : "border-r-4"}`
-                  : `${isEven ? "border-r-4" : "border-l-4"}`
-              }`}
+              className={`rounded-sm border border-primary/50 p-4 ${index % 2 === 0
+                ? `${isEven ? "border-l-4" : "border-r-4"}`
+                : `${isEven ? "border-r-4" : "border-l-4"}`
+                }`}
             >
               <h2 className="font-bold">
                 {new Date(year, index).toLocaleString("en-US", {
