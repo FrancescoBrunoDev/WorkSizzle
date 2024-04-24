@@ -45,7 +45,7 @@ export default function Controls({
 }) {
   return (
     <>
-      <div className="fixed bottom-2 z-50 mx-2 flex flex-wrap items-center justify-center gap-8 rounded-lg bg-white/60 px-4 py-2 backdrop-blur-lg md:sticky md:top-20">
+      <div className="fixed bottom-0 z-50 mx-2 flex flex-wrap items-center justify-center gap-8 rounded-t-lg bg-white/60 px-4 py-2 backdrop-blur-lg md:sticky md:top-20 md:rounded-lg">
         <DateSelector year={year} />
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
