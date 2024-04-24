@@ -134,7 +134,7 @@ export default function MainView({
           return (
             <div
               key={index}
-              className={`rounded-sm border p-4 ${
+              className={`rounded-sm border border-primary/50 p-4 ${
                 index % 2 === 0
                   ? `${isEven ? "border-l-4" : "border-r-4"}`
                   : `${isEven ? "border-r-4" : "border-l-4"}`

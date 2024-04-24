@@ -24,18 +24,20 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div className="fixed top-0 z-50 w-full flex justify-center flex-col backdrop-blur-lg text-center bg-white/60">
+    <div
+      className={`fixed top-0 z-50 flex w-full flex-col justify-center bg-background text-center`}
+    >
       <h1
-        className={`font-black ${
+        className={`font-black text-primary ${
           isTop
-            ? "md:text-9xl pt-12 text-5xl -rotate-3"
-            : "lg:text-5xl text-2xl py-2"
+            ? "-rotate-3 pt-12 text-5xl md:text-9xl"
+            : "py-2 text-2xl lg:text-5xl"
         } transition-all`}
       >
         WorkSizzle
       </h1>
       <div
-        className={`font-medium text-base w-full flex justify-center p-12 ${
+        className={`flex w-full justify-center p-12 text-base font-medium ${
           isTop ? "block" : "hidden"
         }`}
       >
@@ -44,9 +46,9 @@ export default function Navbar() {
           work allowance percentage for each month.
         </p>
       </div>
-      <div className="absolute top-2 right-2">
+      <div className={`absolute right-2 flex h-full items-center`}>
         <Link href="https://github.com/FrancescoBrunoDev/worksizzle">
-          <Github />
+          <Github color="rgb(var(--primary))" />
         </Link>
       </div>
     </div>
