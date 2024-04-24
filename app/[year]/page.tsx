@@ -6,7 +6,7 @@ const MainView = dynamic(() => import("@/components/ui/calendar/mainView"), {
 
 async function getHoliday(year: number) {
   const res = await fetch(
-    `https://date.nager.at/api/v3/publicholidays/${year}/DE`
+    `https://date.nager.at/api/v3/publicholidays/${year}/DE`, { cache: 'no-store' }
   );
 
   if (!res.ok) {
