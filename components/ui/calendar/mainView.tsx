@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Controls from "@/components/ui/calendar/controls";
-import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
 
 interface holiday {
@@ -22,16 +19,14 @@ interface holiday {
 // https://stackoverflow.com/a/23593099
 function formatDate(date: Date) {
   var d = new Date(date),
-    month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
+    month = "" + (d.getMonth() + 1),
+    day = "" + d.getDate(),
     year = d.getFullYear();
 
-  if (month.length < 2)
-    month = '0' + month;
-  if (day.length < 2)
-    day = '0' + day;
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
 
-  return [year, month, day].join('-');
+  return [year, month, day].join("-");
 }
 
 export default function MainView({
@@ -41,9 +36,24 @@ export default function MainView({
   holidays: holiday[];
   year: number;
 }) {
-  const [isRounded, setIsRounded] = useState(false);
-  const [isEven, setIsEven] = useState(false);
-  const [percentage, setPercentage] = useState(20);
+  // existing state variables
+  const [isRounded, setIsRounded] = useState(() =>
+    JSON.parse(localStorage.getItem("isRounded") || "false")
+  );
+  const [isEven, setIsEven] = useState(() =>
+    JSON.parse(localStorage.getItem("isEven") || "false")
+  );
+  const [percentage, setPercentage] = useState(() =>
+    JSON.parse(localStorage.getItem("percentage") || "20")
+  );
+
+  // useEffect to save state variables to local storage
+  useEffect(() => {
+    localStorage.setItem("isRounded", JSON.stringify(isRounded));
+    localStorage.setItem("isEven", JSON.stringify(isEven));
+    localStorage.setItem("percentage", JSON.stringify(percentage));
+  }, [isRounded, isEven, percentage]);
+
   const holidaysForYear = holidays.map((holiday) => {
     if (holiday.counties === null || holiday.counties.includes("DE-BY")) {
       return holiday.date;
@@ -72,13 +82,16 @@ export default function MainView({
     return { total: count, twentyPercent };
   }
 
-
   const workingDaysInMonths = Array.from({ length: 12 }, (_, i) =>
     calculateTwentyPercentDays(i, year)
   );
 
   function isDisabled(date: Date) {
-    if (date.getDay() === 0 || date.getDay() === 6 || holidaysForYear.includes(date.toISOString().slice(0, 10))) {
+    if (
+      date.getDay() === 0 ||
+      date.getDay() === 6 ||
+      holidaysForYear.includes(date.toISOString().slice(0, 10))
+    ) {
       return true;
     }
     return false;
@@ -104,8 +117,11 @@ export default function MainView({
           return (
             <div
               key={index}
-              className={`border rounded-sm p-4 ${index % 2 === 0 ? `${isEven ? "border-l-4" : "border-r-4"}` : `${isEven ? "border-r-4" : "border-l-4"}`
-                }`}
+              className={`border rounded-sm p-4 ${
+                index % 2 === 0
+                  ? `${isEven ? "border-l-4" : "border-r-4"}`
+                  : `${isEven ? "border-r-4" : "border-l-4"}`
+              }`}
             >
               <h2 className="font-bold">
                 {new Date(year, index).toLocaleString("en-US", {
