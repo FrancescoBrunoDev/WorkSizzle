@@ -1,4 +1,8 @@
-import MainView from "@/components/ui/calendar/mainView";
+import dynamic from "next/dynamic";
+
+const MainView = dynamic(() => import("@/components/ui/calendar/mainView"), {
+  ssr: false,
+});
 
 async function getHoliday(year: number) {
   const res = await fetch(

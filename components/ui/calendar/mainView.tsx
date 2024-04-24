@@ -38,21 +38,36 @@ export default function MainView({
 }) {
   // existing state variables
   const [isRounded, setIsRounded] = useState(() =>
-    JSON.parse(localStorage.getItem("isRounded") || "false")
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("isRounded") || "false")
+      : false
   );
   const [isEven, setIsEven] = useState(() =>
-    JSON.parse(localStorage.getItem("isEven") || "false")
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("isEven") || "false")
+      : false
+  );
+  const [areCalendarsCollapsed, setAreCalendarsCollapsed] = useState(() =>
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("areCalendarsCollapsed") || "false")
+      : false
   );
   const [percentage, setPercentage] = useState(() =>
-    JSON.parse(localStorage.getItem("percentage") || "20")
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("percentage") || "20")
+      : 20
   );
 
   // useEffect to save state variables to local storage
   useEffect(() => {
     localStorage.setItem("isRounded", JSON.stringify(isRounded));
     localStorage.setItem("isEven", JSON.stringify(isEven));
+    localStorage.setItem(
+      "areCalendarsCollapsed",
+      JSON.stringify(areCalendarsCollapsed)
+    );
     localStorage.setItem("percentage", JSON.stringify(percentage));
-  }, [isRounded, isEven, percentage]);
+  }, [isRounded, isEven, areCalendarsCollapsed, percentage]);
 
   const holidaysForYear = holidays.map((holiday) => {
     if (holiday.counties === null || holiday.counties.includes("DE-BY")) {
@@ -107,6 +122,8 @@ export default function MainView({
         isEven={isEven}
         setIsEven={setIsEven}
         year={year}
+        areCalendarsCollapsed={areCalendarsCollapsed}
+        setAreCalendarsCollapsed={setAreCalendarsCollapsed}
       />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-1 w-full">
         <div />
@@ -145,16 +162,18 @@ export default function MainView({
                   </ul>
                 </div>
               )}
-              <div className="w-full flex justify-center">
-                <Calendar
-                  mode="multiple"
-                  defaultMonth={new Date(year, index)}
-                  disabled={isDisabled}
-                  ISOWeek={true}
-                  disableNavigation={true}
-                  hideHead={false}
-                />
-              </div>
+              {!areCalendarsCollapsed && (
+                <div className="w-full flex justify-center">
+                  <Calendar
+                    mode="multiple"
+                    defaultMonth={new Date(year, index)}
+                    disabled={isDisabled}
+                    ISOWeek={true}
+                    disableNavigation={true}
+                    hideHead={false}
+                  />
+                </div>
+              )}
             </div>
           );
         })}

@@ -30,6 +30,8 @@ export default function Controls({
   isEven,
   setIsEven,
   year,
+  areCalendarsCollapsed,
+  setAreCalendarsCollapsed
 }: {
   isRounded: boolean;
   setIsRounded: (value: boolean) => void;
@@ -38,6 +40,8 @@ export default function Controls({
   isEven: boolean;
   setIsEven: (value: boolean) => void;
   year: number;
+  areCalendarsCollapsed: boolean;
+  setAreCalendarsCollapsed: (value: boolean) => void;
 }) {
   return (
     <>
@@ -59,6 +63,13 @@ export default function Controls({
               onCheckedChange={() => setIsRounded(!isRounded)}
             />
             <Label htmlFor="airplane-mode">Rounded days</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={areCalendarsCollapsed}
+              onCheckedChange={() => setAreCalendarsCollapsed(!areCalendarsCollapsed)}
+            />
+            <Label htmlFor="airplane-mode">Hide calendars</Label>
           </div>
         </div>
         <div className="flex items-center space-x-2 w-60">
