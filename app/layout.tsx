@@ -10,7 +10,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "WorkSizzle",
-  description: "Calculate the optimal number of on-site workdays based on your remote work allowance percentage for each month.",
+  description:
+    "Calculate the optimal number of on-site workdays based on your remote work allowance percentage for each month.",
 };
 
 export default function RootLayout({

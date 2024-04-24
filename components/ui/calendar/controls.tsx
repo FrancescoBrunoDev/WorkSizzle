@@ -6,15 +6,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function DateSelector({ year }: { year: number }) {
   return (
-    <div className="flex items-center gap-2 bg-secondary border-secondary p-1 rounded-lg">
+    <div className="flex items-center gap-2 rounded-lg border-secondary bg-secondary p-1">
       <Link href={`/${Number(year) - 1}`}>
-        <button className="p-1 bg-background rounded-lg">
+        <button className="rounded-lg bg-background p-1">
           <ChevronLeft strokeWidth={2.25} />
         </button>
       </Link>
       <h1 className="text-xl font-black">{year}</h1>
       <Link href={`/${Number(year) + 1}`}>
-        <button className="p-1 bg-background rounded-lg">
+        <button className="rounded-lg bg-background p-1">
           <ChevronRight strokeWidth={2.25} />
         </button>
       </Link>
@@ -31,7 +31,7 @@ export default function Controls({
   setIsEven,
   year,
   areCalendarsCollapsed,
-  setAreCalendarsCollapsed
+  setAreCalendarsCollapsed,
 }: {
   isRounded: boolean;
   setIsRounded: (value: boolean) => void;
@@ -45,7 +45,7 @@ export default function Controls({
 }) {
   return (
     <>
-      <div className="flex items-center gap-8 flex-wrap justify-center fixed bottom-2 md:sticky md:top-20 z-50 py-2 px-4 rounded-lg backdrop-blur-lg bg-white/60 mx-2">
+      <div className="fixed bottom-2 z-50 mx-2 flex flex-wrap items-center justify-center gap-8 rounded-lg bg-white/60 px-4 py-2 backdrop-blur-lg md:sticky md:top-20">
         <DateSelector year={year} />
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
@@ -67,12 +67,14 @@ export default function Controls({
           <div className="flex items-center space-x-2">
             <Switch
               checked={areCalendarsCollapsed}
-              onCheckedChange={() => setAreCalendarsCollapsed(!areCalendarsCollapsed)}
+              onCheckedChange={() =>
+                setAreCalendarsCollapsed(!areCalendarsCollapsed)
+              }
             />
             <Label htmlFor="airplane-mode">Hide calendars</Label>
           </div>
         </div>
-        <div className="flex items-center space-x-2 w-60">
+        <div className="flex w-60 items-center space-x-2">
           <Slider
             defaultValue={[percentage]}
             max={100}

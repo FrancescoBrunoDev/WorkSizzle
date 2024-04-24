@@ -40,22 +40,22 @@ export default function MainView({
   const [isRounded, setIsRounded] = useState(() =>
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("isRounded") || "false")
-      : false
+      : false,
   );
   const [isEven, setIsEven] = useState(() =>
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("isEven") || "false")
-      : false
+      : false,
   );
   const [areCalendarsCollapsed, setAreCalendarsCollapsed] = useState(() =>
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("areCalendarsCollapsed") || "false")
-      : false
+      : false,
   );
   const [percentage, setPercentage] = useState(() =>
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("percentage") || "20")
-      : 20
+      : 20,
   );
 
   // useEffect to save state variables to local storage
@@ -64,7 +64,7 @@ export default function MainView({
     localStorage.setItem("isEven", JSON.stringify(isEven));
     localStorage.setItem(
       "areCalendarsCollapsed",
-      JSON.stringify(areCalendarsCollapsed)
+      JSON.stringify(areCalendarsCollapsed),
     );
     localStorage.setItem("percentage", JSON.stringify(percentage));
   }, [isRounded, isEven, areCalendarsCollapsed, percentage]);
@@ -77,7 +77,7 @@ export default function MainView({
 
   function calculateTwentyPercentDays(
     month: number,
-    year: number
+    year: number,
   ): { total: number; twentyPercent: number } {
     let count = 0;
     let date = new Date(year, month, 1);
@@ -98,7 +98,7 @@ export default function MainView({
   }
 
   const workingDaysInMonths = Array.from({ length: 12 }, (_, i) =>
-    calculateTwentyPercentDays(i, year)
+    calculateTwentyPercentDays(i, year),
   );
 
   function isDisabled(date: Date) {
@@ -113,7 +113,7 @@ export default function MainView({
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between gap-4 container pt-72 md:pt-80 pb-12">
+    <main className="container flex min-h-screen flex-col items-center gap-4 pb-72 pt-72 md:pb-12 md:pt-80">
       <Controls
         isRounded={isRounded}
         setIsRounded={setIsRounded}
@@ -125,16 +125,16 @@ export default function MainView({
         areCalendarsCollapsed={areCalendarsCollapsed}
         setAreCalendarsCollapsed={setAreCalendarsCollapsed}
       />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-1 w-full">
+      <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-3">
         <div />
         {workingDaysInMonths.map((days, index) => {
           const monthHolidays = holidaysForYear.filter(
-            (holiday) => new Date(holiday ?? "").getMonth() === index
+            (holiday) => new Date(holiday ?? "").getMonth() === index,
           );
           return (
             <div
               key={index}
-              className={`border rounded-sm p-4 ${
+              className={`rounded-sm border p-4 ${
                 index % 2 === 0
                   ? `${isEven ? "border-l-4" : "border-r-4"}`
                   : `${isEven ? "border-r-4" : "border-l-4"}`
@@ -149,9 +149,9 @@ export default function MainView({
                 {days.twentyPercent} days (out of {days.total} working days)
               </p>
               {monthHolidays.length > 0 && (
-                <div className="inline-flex gap-4 flex-wrap items-center">
-                  <h3 className="font-bold text-sm">Holidays:</h3>
-                  <ul className="flex gap-4 flex-wrap">
+                <div className="inline-flex flex-wrap items-center gap-4">
+                  <h3 className="text-sm font-bold">Holidays:</h3>
+                  <ul className="flex flex-wrap gap-4">
                     {monthHolidays.map((holiday, i) => (
                       <li key={i} className="text-xs">
                         {new Date(holiday ?? "").toLocaleString("default", {
@@ -163,7 +163,7 @@ export default function MainView({
                 </div>
               )}
               {!areCalendarsCollapsed && (
-                <div className="w-full flex justify-center">
+                <div className="flex w-full justify-center">
                   <Calendar
                     mode="multiple"
                     defaultMonth={new Date(year, index)}
