@@ -89,7 +89,7 @@ export default function Controls({
   return (
     <div className="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center gap-4 md:gap-6 rounded-t-lg bg-secondary/60 px-4 pb-6 pt-4 backdrop-blur-md md:sticky md:top-20 md:w-fit md:rounded-lg md:py-4">
       <div onClick={() => setAreControlsCollapsed(!areControlsCollapsed)} className={`bg-primary rounded-lg p-1 transition-transform md:hidden hover:cursor-pointer mb-2 ${areControlsCollapsed ? "hover:translate-y-1" : "hover:-translate-y-1"}`}>
-        {areControlsCollapsed ? <ChevronUp color="rgb(var(--background))" /> : <ChevronDown color="rgb(var(--background))" />}
+        {areControlsCollapsed ? <ChevronUp size={35} color="rgb(var(--background))" /> : <ChevronDown size={35} color="rgb(var(--background))" />}
       </div>
       <div className="flex items-center gap-3 md:flex-row flex-wrap justify-center w-full">
         <DateSelector year={year} />
