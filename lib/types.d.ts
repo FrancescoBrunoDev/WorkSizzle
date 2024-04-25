@@ -16,3 +16,11 @@ interface holiday {
     alpha3?: string;
     name?: string;
   }
+
+  interface countryState {
+    name: string;
+    alpha2: string;
+    subCountries: country[];
+    subCountry: string;
+  }
+

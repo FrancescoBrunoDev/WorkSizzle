@@ -12,11 +12,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-function handleCountryChange(value: string, setCountry: (value: string) => void, subCountries: any, setSubCountry: (value: string) => void) {
-  setCountry(value)
-  if (subCountries.length > 0) {
-    setSubCountry(subCountries[0].alpha2)
-  }
+function handleCountryChange(value: string, setCountry: (value: any) => void, kind: "alpha2" | "subCountry") {
+  console.log(value)
+  setCountry((prevState: countryState) => ({
+    ...prevState,
+    [kind]: value.toLocaleUpperCase(),
+    name: countries_ISO.find((country: country) => country.alpha2?.toLocaleUpperCase() === value)?.name,
+  }));
 }
 
 function DateSelector({ year }: { year: number }) {
@@ -68,9 +70,6 @@ export default function Controls({
   setAreCalendarsCollapsed,
   country,
   setCountry,
-  subCountries,
-  subCountry,
-  setSubCountry,
 
 }: {
   isRounded: boolean;
@@ -82,18 +81,15 @@ export default function Controls({
   year: number;
   areCalendarsCollapsed: boolean;
   setAreCalendarsCollapsed: (value: boolean) => void;
-  country: string;
-  setCountry: (value: string) => void;
-  subCountries: country[];
-  subCountry: string;
-  setSubCountry: (value: string) => void;
+  country: countryState;
+  setCountry: (value: countryState) => void;
 }) {
   return (
     <div className="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center gap-4 rounded-t-lg bg-secondary/60 px-4 pb-6 pt-4 backdrop-blur-md md:sticky md:top-20 md:w-fit md:gap-8 md:rounded-lg md:py-4">
       <div className="flex items-center gap-3 md:flex-row flex-wrap justify-center">
         <DateSelector year={year} />
-        <CountrySelector countries={countries_ISO} country={country} setCountry={(value) => handleCountryChange(value, setCountry, subCountries, setSubCountry)} />
-        {subCountries.length > 0 && <CountrySelector countries={subCountries} country={subCountry} setCountry={setSubCountry} />}
+        <CountrySelector countries={countries_ISO} country={country.alpha2} setCountry={(value) => handleCountryChange(value, setCountry, "alpha2")} />
+        {country.subCountries.length > 0 && <CountrySelector countries={country.subCountries} country={country.subCountry} setCountry={(value) => handleCountryChange(value, setCountry, "subCountry")} />}
       </div>
       <div className="flex flex-wrap gap-8 justify-center">
         <div className="align-start flex flex-col items-start gap-3 md:flex-row md:w-fit w-full">

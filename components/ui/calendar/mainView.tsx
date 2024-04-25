@@ -19,10 +19,12 @@ function formatDate(date: Date) {
   return [year, month, day].join("-");
 }
 
-async function getHoliday(year: number, country: string) {
+
+
+async function getHoliday(year: number, country: countryState) {
   try {
     const res = await fetch(
-      `https://date.nager.at/api/v3/publicholidays/${year}/${country}`,
+      `https://date.nager.at/api/v3/publicholidays/${year}/${country.alpha2}`,
     );
 
     if (!res.ok) {
@@ -31,7 +33,7 @@ async function getHoliday(year: number, country: string) {
 
     const data = await res.json();
     toast.success("Good news", {
-      description: "The data regarding the holidays has been updated.",
+      description: "The data regarding the holidays in " + country.name + " has been updated.",
     })
     return data;
   } catch (error) {
@@ -91,17 +93,17 @@ export default function MainView({
       ? JSON.parse(localStorage.getItem("percentage") || "20")
       : 20,
   );
-  const [country, setCountry] = useState(
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("country") || '"DE"')
-      : "DE",
-  );
-  const [subCountries, setSubCountries] = useState<country[]>([]);
-  const [subCountry, setSubCountry] = useState(
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("subCountry") || '"all"')
-      : "all",
-  );
+  const [country, setCountry] = useState<countryState>(() => {
+    return typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("country") || '{"name": "Germany", "alpha2": "DE", "subCountries": [], "subCountry": "all"}')
+      : {
+        name: "Germany",
+        alpha2: "DE",
+        subCountries: [],
+        subCountry: "all"
+      };
+  });
+
   const [holidays, setHolidays] = useState<holiday[]>([]);
 
   // useEffect to save state variables to local storage
@@ -114,19 +116,21 @@ export default function MainView({
     );
     localStorage.setItem("percentage", JSON.stringify(percentage));
     localStorage.setItem("country", JSON.stringify(country));
-    localStorage.setItem("subCountry", JSON.stringify(subCountry));
-  }, [isRounded, isEven, areCalendarsCollapsed, percentage, country, subCountry]);
+  }, [isRounded, isEven, areCalendarsCollapsed, percentage, country]);
 
   useEffect(() => {
     getHoliday(year, country).then((data) => {
       setHolidays(data);
       const arraySubCountries: country[] = getSubCountries(data)
-      setSubCountries(arraySubCountries);
-    })
-  }, [year, country]);
+      setCountry(prevState => ({
+        ...prevState,
+        subCountries: arraySubCountries,
+      }));
+    });
+  }, [year, country.alpha2]);
 
   const holidaysForYear = holidays.map((holiday) => {
-    if (holiday.counties === null || holiday.counties.includes(subCountry)) {
+    if (holiday.counties === null || holiday.counties.includes(country.subCountry)) {
       return holiday.date;
     }
   });
@@ -182,9 +186,6 @@ export default function MainView({
         setAreCalendarsCollapsed={setAreCalendarsCollapsed}
         country={country}
         setCountry={setCountry}
-        subCountries={subCountries}
-        subCountry={subCountry}
-        setSubCountry={setSubCountry}
       />
       <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3">
         <div className="hidden lg:block" />
