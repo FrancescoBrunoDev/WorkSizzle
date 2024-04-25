@@ -2,7 +2,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import countries_ISO from "@/app/countries_ISO.json";
 import {
   Select,
@@ -11,9 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import SwitchOption from "@/components/ui/SwitchOption";
 
 function handleCountryChange(value: string, setCountry: (value: any) => void, kind: "alpha2" | "subCountry") {
-  console.log(value)
   setCountry((prevState: countryState) => ({
     ...prevState,
     [kind]: value.toLocaleUpperCase(),
@@ -70,7 +70,8 @@ export default function Controls({
   setAreCalendarsCollapsed,
   country,
   setCountry,
-
+  setAreControlsCollapsed,
+  areControlsCollapsed
 }: {
   isRounded: boolean;
   setIsRounded: (value: boolean) => void;
@@ -83,38 +84,26 @@ export default function Controls({
   setAreCalendarsCollapsed: (value: boolean) => void;
   country: countryState;
   setCountry: (value: countryState) => void;
+  setAreControlsCollapsed: (value: boolean) => void;
+  areControlsCollapsed: boolean
 }) {
   return (
     <div className="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center gap-4 rounded-t-lg bg-secondary/60 px-4 pb-6 pt-4 backdrop-blur-md md:sticky md:top-20 md:w-fit md:gap-8 md:rounded-lg md:py-4">
+      <div onClick={() => setAreControlsCollapsed(!areControlsCollapsed)} className={`bg-primary rounded-lg p-1 transition-transform md:hidden hover:cursor-pointer ${areControlsCollapsed ? "hover:translate-y-1" : "hover:-translate-y-1"}`}>
+        {areControlsCollapsed ? <ChevronUp color="rgb(var(--background))" /> : <ChevronDown color="rgb(var(--background))" />}
+      </div>
       <div className="flex items-center gap-3 md:flex-row flex-wrap justify-center">
         <DateSelector year={year} />
         <CountrySelector countries={countries_ISO} country={country.alpha2} setCountry={(value) => handleCountryChange(value, setCountry, "alpha2")} />
         {country.subCountries && country.subCountries.length > 0 && <CountrySelector countries={country.subCountries} country={country.subCountry} setCountry={(value) => handleCountryChange(value, setCountry, "subCountry")} />}
       </div>
-      <div className="flex flex-wrap gap-8 justify-center">
+      <div className={`${areControlsCollapsed ? "h-0 overflow-hidden md:h-fit" : ""} flex flex-wrap gap-8 justify-center items-center`}>
         <div className="align-start flex flex-col items-start gap-3 md:flex-row md:w-fit w-full">
-          <div className="flex items-center space-x-2">
-            <Switch checked={isEven} onCheckedChange={() => setIsEven(!isEven)} />
-            <Label htmlFor="airplane-mode">Make side calendar the opposite</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={isRounded}
-              onCheckedChange={() => setIsRounded(!isRounded)}
-            />
-            <Label htmlFor="airplane-mode">Rounded days</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={areCalendarsCollapsed}
-              onCheckedChange={() =>
-                setAreCalendarsCollapsed(!areCalendarsCollapsed)
-              }
-            />
-            <Label htmlFor="airplane-mode">Hide calendars</Label>
-          </div>
+          <SwitchOption checked={isEven} setChecked={setIsEven} label="Make side calendar the opposite" />
+          <SwitchOption checked={isRounded} setChecked={setIsRounded} label="Rounded days" />
+          <SwitchOption checked={areCalendarsCollapsed} setChecked={setAreCalendarsCollapsed} label="Hide calendars" />
         </div>
-        <div className="flex min-w-60 items-center space-x-2 w-full md:w-fit">
+        <div className="flex min-w-60 items-center space-x-2 w-full md:w-fit hover:bg-background rounded-lg transition-colors p-2">
           <Slider
             defaultValue={[percentage]}
             max={100}

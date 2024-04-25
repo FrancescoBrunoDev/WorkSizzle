@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Controls from "@/components/ui/calendar/controls";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner"
@@ -57,7 +57,13 @@ export default function MainView({
       };
   });
 
-  const [holidays, setHolidays] = useState<holiday[]>([]);
+  const [holidaysForYear, setHolidaysForYear] = useState<string[]>([]);
+  const [workingDaysInMonths, setWorkingDaysInMonths] = useState(() => Array.from({ length: 12 }, (_, i) => calculateTwentyPercentDays(i, year)));
+  const [areControlsCollapsed, setAreControlsCollapsed] = useState(() =>
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("areControlsCollapsed") || "false")
+      : false,
+  );
 
   // useEffect to save state variables to local storage
   useEffect(() => {
@@ -69,11 +75,16 @@ export default function MainView({
     );
     localStorage.setItem("percentage", JSON.stringify(percentage));
     localStorage.setItem("country", JSON.stringify(country));
-  }, [isRounded, isEven, areCalendarsCollapsed, percentage, country]);
+    localStorage.setItem("areControlsCollapsed", JSON.stringify(areControlsCollapsed));
+  }, [isRounded, isEven, areCalendarsCollapsed, percentage, country, areControlsCollapsed]);
 
   useEffect(() => {
     getHoliday(year, country).then((data) => {
-      setHolidays(data);
+      setHolidaysForYear(data.filter((holiday: { counties: string | string[] | null; }) => holiday.counties === null || holiday.counties.includes(country.subCountry))
+        .map((holiday: { date: any; }) => {
+          return holiday.date;
+        })
+      );
       if (data.length > 0) {
         toast.success("Good news", {
           description: "The data regarding the holidays in " + country.name + " has been updated.",
@@ -90,13 +101,8 @@ export default function MainView({
         }));
       })
     });
-  }, [year, country.alpha2]);
+  }, [year, country.alpha2, country.subCountry]);
 
-  const holidaysForYear = holidays.map((holiday) => {
-    if (holiday.counties === null || holiday.counties.includes(country.subCountry)) {
-      return holiday.date;
-    }
-  });
 
   function calculateTwentyPercentDays(
     month: number,
@@ -120,20 +126,21 @@ export default function MainView({
     return { total: count, twentyPercent };
   }
 
-  const workingDaysInMonths = Array.from({ length: 12 }, (_, i) =>
-    calculateTwentyPercentDays(i, year),
-  );
+  useEffect(() => {
+    setWorkingDaysInMonths(Array.from({ length: 12 }, (_, i) => calculateTwentyPercentDays(i, year)));
+  }, [year, percentage, isRounded, country]);
 
-  function isDisabled(date: Date) {
+  const isDisabledDay = (date: Date) => {
+    const localDate = `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}`;
     if (
       date.getDay() === 0 ||
       date.getDay() === 6 ||
-      holidaysForYear.includes(date.toISOString().slice(0, 10))
+      holidaysForYear.includes(localDate)
     ) {
       return true;
     }
     return false;
-  }
+  };
 
   return (
     <main className="container flex min-h-screen flex-col items-center gap-4 pb-72 pt-72 md:pb-12 md:pt-80">
@@ -149,6 +156,8 @@ export default function MainView({
         setAreCalendarsCollapsed={setAreCalendarsCollapsed}
         country={country}
         setCountry={setCountry}
+        setAreControlsCollapsed={setAreControlsCollapsed}
+        areControlsCollapsed={areControlsCollapsed}
       />
       <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3">
         <div className="hidden lg:block" />
@@ -159,45 +168,45 @@ export default function MainView({
           return (
             <div
               key={index}
-              className={`rounded-sm border border-primary/50 p-4 ${index % 2 === 0
+              className={`rounded-sm border flex flex-col  border-primary/50 p-4 ${index % 2 === 0
                 ? `${isEven ? "border-l-4" : "border-r-4"}`
                 : `${isEven ? "border-r-4" : "border-l-4"}`
                 }`}
             >
-              <h2 className="font-bold">
-                {new Date(year, index).toLocaleString("en-US", {
-                  month: "long",
-                })}
-              </h2>
-              <p>
-                {days.twentyPercent} days (out of {days.total} working days)
-              </p>
-              {monthHolidays.length > 0 && (
-                <div className="inline-flex flex-wrap items-center gap-4">
-                  <h3 className="text-sm font-bold">Holidays:</h3>
-                  <ul className="flex flex-wrap gap-4">
-                    {monthHolidays.map((holiday, i) => (
-                      <li key={i} className="text-xs">
-                        {new Date(holiday ?? "").toLocaleString("default", {
-                          day: "2-digit",
-                        })}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {!areCalendarsCollapsed && (
-                <div className="flex w-full justify-center">
-                  <Calendar
-                    mode="multiple"
-                    defaultMonth={new Date(year, index)}
-                    disabled={isDisabled}
-                    ISOWeek={true}
-                    disableNavigation={true}
-                    hideHead={false}
-                  />
-                </div>
-              )}
+              <div className="grow">
+                <h2 className="font-bold">
+                  {new Date(year, index).toLocaleString("en-US", {
+                    month: "long",
+                  })}
+                </h2>
+                <p>
+                  {days.twentyPercent} days (out of {days.total} working days)
+                </p>
+                {monthHolidays.length > 0 && (
+                  <div className="inline-flex flex-wrap items-center gap-4">
+                    <h3 className="text-sm font-bold">Holidays:</h3>
+                    <ul className="flex flex-wrap gap-4">
+                      {monthHolidays.map((holiday, i) => (
+                        <li key={i} className="text-xs">
+                          {new Date(holiday ?? "").toLocaleString("default", {
+                            day: "2-digit",
+                          })}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div className={`flex w-full items-center justify-center overflow-hidden ${areCalendarsCollapsed ? "h-[300px]" : "h-0"} transition-height duration-300`}>
+                <Calendar
+                  mode="single"
+                  month={new Date(year, index)}
+                  disabled={isDisabledDay}
+                  ISOWeek={true}
+                  disableNavigation={true}
+                  hideHead={false}
+                />
+              </div>
             </div>
           );
         })}

@@ -22,6 +22,10 @@ module.exports = {
         primary: "rgb(var(--primary))",
         secondary: "rgb(var(--secondary))",
         accent: "rgb(var(--accent))",
+        transitionProperty: {
+          height: "height",
+          spacing: "margin, padding",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
