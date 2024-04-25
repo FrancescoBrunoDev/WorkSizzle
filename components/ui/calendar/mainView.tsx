@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Controls from "@/components/ui/calendar/controls";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner"
+import { getHoliday, getSubCountries } from "@/actions/actions";
 
 
 // https://stackoverflow.com/a/23593099
@@ -17,54 +18,6 @@ function formatDate(date: Date) {
   if (day.length < 2) day = "0" + day;
 
   return [year, month, day].join("-");
-}
-
-
-
-async function getHoliday(year: number, country: countryState) {
-  try {
-    const res = await fetch(
-      `https://date.nager.at/api/v3/publicholidays/${year}/${country.alpha2}`,
-    );
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    toast.success("Good news", {
-      description: "The data regarding the holidays in " + country.name + " has been updated.",
-    })
-    return data;
-  } catch (error) {
-    console.error("Error fetching holidays:", error);
-    // Optionally, return a default value or handle the error as needed
-    toast.error("Bad news", {
-      description: "I have no data about holidays for this country.",
-    })
-    return []; // Return an empty array as a fallback
-  }
-}
-
-function getSubCountries(holidays: holiday[]) {
-  if (!holidays || holidays.length === 0) {
-    return [];
-  }
-
-  const subCountries = holidays.map((holiday) => holiday.counties).flat();
-  const uniqueSubCountries = Array.from(new Set(subCountries.filter(Boolean)));
-
-  const structuredSubCountries = uniqueSubCountries.map((code, index) => ({
-    id: index + 1,
-    alpha2: code
-  }));
-
-  // Add the "all" entry at the beginning of the array
-  if (structuredSubCountries.length > 0) {
-    structuredSubCountries.unshift({ id: 0, alpha2: "all" });
-  }
-
-  return structuredSubCountries;
 }
 
 export default function MainView({
@@ -121,11 +74,21 @@ export default function MainView({
   useEffect(() => {
     getHoliday(year, country).then((data) => {
       setHolidays(data);
-      const arraySubCountries: country[] = getSubCountries(data)
-      setCountry(prevState => ({
-        ...prevState,
-        subCountries: arraySubCountries,
-      }));
+      if (data.length > 0) {
+        toast.success("Good news", {
+          description: "The data regarding the holidays in " + country.name + " has been updated.",
+        })
+      } else {
+        toast.error("Bad news", {
+          description: "I have no data about holidays for " + country.name + ".",
+        })
+      }
+      getSubCountries(data).then((data) => {
+        setCountry(prevState => ({
+          ...prevState,
+          subCountries: data,
+        }));
+      })
     });
   }, [year, country.alpha2]);
 

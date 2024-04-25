@@ -89,7 +89,7 @@ export default function Controls({
       <div className="flex items-center gap-3 md:flex-row flex-wrap justify-center">
         <DateSelector year={year} />
         <CountrySelector countries={countries_ISO} country={country.alpha2} setCountry={(value) => handleCountryChange(value, setCountry, "alpha2")} />
-        {country.subCountries.length > 0 && <CountrySelector countries={country.subCountries} country={country.subCountry} setCountry={(value) => handleCountryChange(value, setCountry, "subCountry")} />}
+        {country.subCountries && country.subCountries.length > 0 && <CountrySelector countries={country.subCountries} country={country.subCountry} setCountry={(value) => handleCountryChange(value, setCountry, "subCountry")} />}
       </div>
       <div className="flex flex-wrap gap-8 justify-center">
         <div className="align-start flex flex-col items-start gap-3 md:flex-row md:w-fit w-full">

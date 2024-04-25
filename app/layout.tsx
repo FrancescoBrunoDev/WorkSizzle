@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background font-sans antialiased">
         <Navbar />
         {children}
-        <Toaster position="bottom-center" expand={true} richColors />
+        <Toaster position="bottom-center" expand={false} richColors />
       </body>
     </html>
   );
