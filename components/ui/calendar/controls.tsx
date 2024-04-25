@@ -1,4 +1,3 @@
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
@@ -88,7 +87,7 @@ export default function Controls({
   areControlsCollapsed: boolean
 }) {
   return (
-    <div className="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center gap-4 rounded-t-lg bg-secondary/60 px-4 pb-6 pt-4 backdrop-blur-md md:sticky md:top-20 md:w-fit md:gap-8 md:rounded-lg md:py-4">
+    <div className="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center gap-4 rounded-t-lg bg-secondary/60 px-4 pb-6 pt-4 backdrop-blur-md md:sticky md:top-20 md:w-fit md:rounded-lg md:py-4">
       <div onClick={() => setAreControlsCollapsed(!areControlsCollapsed)} className={`bg-primary rounded-lg p-1 transition-transform md:hidden hover:cursor-pointer ${areControlsCollapsed ? "hover:translate-y-1" : "hover:-translate-y-1"}`}>
         {areControlsCollapsed ? <ChevronUp color="rgb(var(--background))" /> : <ChevronDown color="rgb(var(--background))" />}
       </div>
@@ -105,12 +104,35 @@ export default function Controls({
         </div>
         <div className="flex min-w-60 items-center space-x-2 w-full md:w-fit hover:bg-background rounded-lg transition-colors p-2">
           <Slider
-            defaultValue={[percentage]}
+            value={[percentage]}
             max={100}
             step={1}
             onValueChange={(value) => setPercentage(value[0])}
           />
-          <Label htmlFor="airplane-mode">{percentage}% in office work</Label>
+          <Label className="flex gap-1" htmlFor="airplane-mode">
+            <div className="font-black text-4xl bg-transparent flex items-center">
+              <input
+                className="bg-transparent w-fit [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-end"
+                type="number"
+                value={percentage}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  // Remove leading zeros followed by a non-zero digit
+                  value = value.replace(/^0+(?=[1-9])/, '');
+                  let numValue = parseInt(value, 10);
+                  numValue = Math.max(0, Math.min(numValue, 100));
+                  setPercentage(numValue);
+                }}
+                onBlur={() => {
+                  // if the value is not a number, set it to 0
+                  if (isNaN(percentage)) {
+                    setPercentage(0);
+                  }
+                }}
+                min={1}
+                max={100}
+              />%</div> <div className="w-10">in office work</div>
+          </Label>
         </div>
       </div>
     </div >
