@@ -16,6 +16,10 @@ module.exports = {
       },
     },
     extend: {
+      scale: {
+        101: "1.01",
+        102: "1.02",
+      },
       colors: {
         text: "rgb(var(--text))",
         background: "rgb(var(--background))",

@@ -159,7 +159,7 @@ export default function MainView({
         setAreControlsCollapsed={setAreControlsCollapsed}
         areControlsCollapsed={areControlsCollapsed}
       />
-      <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div className="hidden lg:block" />
         {workingDaysInMonths.map((days, index) => {
           const monthHolidays = holidaysForYear.filter(
@@ -168,13 +168,13 @@ export default function MainView({
           return (
             <div
               key={index}
-              className={`rounded-sm border flex flex-col  border-primary/50 p-4 ${index % 2 === 0
+              className={`rounded-sm border-2 flex flex-col hover:scale-101 transition-transform border-primary/50 p-4 ${index % 2 === 0
                 ? `${isEven ? "border-l-4" : "border-r-4"}`
                 : `${isEven ? "border-r-4" : "border-l-4"}`
                 }`}
             >
-              <div className="grow">
-                <h2 className="font-bold">
+              <div className="grow text-center">
+                <h2 className="font-black text-2xl text-primary uppercase">
                   {new Date(year, index).toLocaleString("en-US", {
                     month: "long",
                   })}
@@ -186,13 +186,17 @@ export default function MainView({
                   <div className="inline-flex flex-wrap items-center gap-4">
                     <h3 className="text-sm font-bold">Holidays:</h3>
                     <ul className="flex flex-wrap gap-4">
-                      {monthHolidays.map((holiday, i) => (
-                        <li key={i} className="text-xs">
-                          {new Date(holiday ?? "").toLocaleString("default", {
-                            day: "2-digit",
-                          })}
-                        </li>
-                      ))}
+                      {monthHolidays.map((holiday, i) => {
+                        const date = new Date(holiday ?? "");
+                        const isWeekend = date.getDay() === 0 || date.getDay() === 6; // 0 is Sunday, 6 is Saturday
+                        return (
+                          <li key={i} className={`text-xs ${isWeekend ? 'line-through' : ''}`}>
+                            {date.toLocaleString("default", {
+                              day: "2-digit",
+                            })}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}

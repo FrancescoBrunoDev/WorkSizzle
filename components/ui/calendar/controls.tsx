@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import SwitchOption from "@/components/ui/SwitchOption";
+import SwitchOption from "@/components/ui/switchOption";
 
 function handleCountryChange(value: string, setCountry: (value: any) => void, kind: "alpha2" | "subCountry") {
   setCountry((prevState: countryState) => ({
@@ -22,7 +22,7 @@ function handleCountryChange(value: string, setCountry: (value: any) => void, ki
 
 function DateSelector({ year }: { year: number }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-background p-1">
+    <div className="flex items-center gap-2 rounded-lg bg-background p-1 hover:scale-102 transition-transform">
       <Link href={`/${Number(year) - 1}`}>
         <button className="rounded-lg bg-primary p-1 transition-all hover:-rotate-12">
           <ChevronLeft color="rgb(var(--background))" />
@@ -42,7 +42,7 @@ function CountrySelector({ country, setCountry, countries }: { country: string; 
   return (
     <div className="w-fit">
       <Select value={country} onValueChange={setCountry}>
-        <SelectTrigger className="bg-background border-none text-primary font-black text-3xl h-11 gap-2">
+        <SelectTrigger className="bg-background border-none text-primary font-black text-3xl h-11 gap-2 hover:scale-102 transition-transform">
           <SelectValue>{country}</SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-background w-44" align="center">
@@ -87,23 +87,24 @@ export default function Controls({
   areControlsCollapsed: boolean
 }) {
   return (
-    <div className="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center gap-4 rounded-t-lg bg-secondary/60 px-4 pb-6 pt-4 backdrop-blur-md md:sticky md:top-20 md:w-fit md:rounded-lg md:py-4">
-      <div onClick={() => setAreControlsCollapsed(!areControlsCollapsed)} className={`bg-primary rounded-lg p-1 transition-transform md:hidden hover:cursor-pointer ${areControlsCollapsed ? "hover:translate-y-1" : "hover:-translate-y-1"}`}>
+    <div className="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center gap-4 md:gap-6 rounded-t-lg bg-secondary/60 px-4 pb-6 pt-4 backdrop-blur-md md:sticky md:top-20 md:w-fit md:rounded-lg md:py-4">
+      <div onClick={() => setAreControlsCollapsed(!areControlsCollapsed)} className={`bg-primary rounded-lg p-1 transition-transform md:hidden hover:cursor-pointer mb-2 ${areControlsCollapsed ? "hover:translate-y-1" : "hover:-translate-y-1"}`}>
         {areControlsCollapsed ? <ChevronUp color="rgb(var(--background))" /> : <ChevronDown color="rgb(var(--background))" />}
       </div>
-      <div className="flex items-center gap-3 md:flex-row flex-wrap justify-center">
+      <div className="flex items-center gap-3 md:flex-row flex-wrap justify-center w-full">
         <DateSelector year={year} />
         <CountrySelector countries={countries_ISO} country={country.alpha2} setCountry={(value) => handleCountryChange(value, setCountry, "alpha2")} />
         {country.subCountries && country.subCountries.length > 0 && <CountrySelector countries={country.subCountries} country={country.subCountry} setCountry={(value) => handleCountryChange(value, setCountry, "subCountry")} />}
       </div>
-      <div className={`${areControlsCollapsed ? "h-0 overflow-hidden md:h-fit" : ""} flex flex-wrap gap-8 justify-center items-center`}>
-        <div className="align-start flex flex-col items-start gap-3 md:flex-row md:w-fit w-full">
+      <div className={`${areControlsCollapsed ? "h-0 overflow-hidden md:h-fit" : ""} flex flex-wrap gap-3 justify-center items-center`}>
+        <div className="align-start flex flex-wrap items-start gap-3 flex-row md:w-fit w-full">
           <SwitchOption checked={isEven} setChecked={setIsEven} label="Make side calendar the opposite" />
           <SwitchOption checked={isRounded} setChecked={setIsRounded} label="Rounded days" />
           <SwitchOption checked={areCalendarsCollapsed} setChecked={setAreCalendarsCollapsed} label="Hide calendars" />
         </div>
-        <div className="flex min-w-60 items-center space-x-2 w-full md:w-fit hover:bg-background rounded-lg transition-colors p-2">
+        <div className="flex min-w-80 items-center space-x-2 w-full md:w-fit hover:bg-background rounded-lg transition-all p-2 hover:scale-102">
           <Slider
+            className="w-full"
             value={[percentage]}
             max={100}
             step={1}
