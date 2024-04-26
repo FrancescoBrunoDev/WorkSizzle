@@ -138,7 +138,7 @@ export default function Controls({
           <Label className="flex gap-1" htmlFor="airplane-mode">
             <div className="font-black text-4xl bg-transparent flex items-center">
               <input
-                className="bg-transparent w-fit [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-end"
+                className="bg-transparent w-[4.5rem] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-end"
                 type="number"
                 value={percentage}
                 onChange={(e) => {
