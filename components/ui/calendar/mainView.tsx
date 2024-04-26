@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Controls from "@/components/ui/calendar/controls";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner"
@@ -22,8 +22,10 @@ function formatDate(date: Date) {
 
 export default function MainView({
   year,
+  countryFromParams,
 }: {
-  year: number;
+  year: number,
+  countryFromParams?: countryState
 }) {
   // existing state variables
   const [isRounded, setIsRounded] = useState(() =>
@@ -47,14 +49,19 @@ export default function MainView({
       : 20,
   );
   const [country, setCountry] = useState<countryState>(() => {
-    return typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("country") || '{"name": "Germany", "alpha2": "DE", "subCountries": [], "subCountry": "all"}')
-      : {
-        name: "Germany",
-        alpha2: "DE",
-        subCountries: [],
-        subCountry: "all"
-      };
+    if (countryFromParams) {
+      return countryFromParams
+    } else {
+      return typeof window !== "undefined"
+        ? JSON.parse(localStorage.getItem("country") || '{"name": "Germany", "alpha2": "DE", "subCountries": [], "subCountry": "all"}')
+        : {
+          name: "Germany",
+          alpha2: "DE",
+          subCountries: [],
+          subCountry: "all"
+        };
+    }
+
   });
 
   const [holidaysForYear, setHolidaysForYear] = useState<string[]>([]);

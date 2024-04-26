@@ -4,13 +4,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Bomb } from "lucide-react";
 
-export default function Error() {
+export default function Error({ error }: { error: Error }) {
     return (
         <div className="flex h-screen w-screen items-center justify-center">
             <div className="flex flex-col items-center gap-4 ">
                 <Bomb className="h-24 w-24 stroke-primary stroke-[2.5]" />
                 <h2 className="text-center font-black text-3xl text-primary h-fit">
-                    Year Not Found
+                    {error.message}
                 </h2>
 
                 <Link href="/">

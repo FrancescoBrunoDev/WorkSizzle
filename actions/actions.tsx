@@ -1,5 +1,7 @@
 'use server'
 
+import countries_ISO from '@/app/countries_ISO.json'
+
 export async function getHoliday(year: number, country: countryState) {
     try {
         const res = await fetch(
@@ -38,4 +40,18 @@ export async function getSubCountries(holidays: holiday[]) {
     }
 
     return structuredSubCountries;
+}
+
+export async function getCountryArray(countryISO: string, subCountry: string) {
+    const countryFullArray = countries_ISO.find((country) => country.alpha2.toUpperCase() === countryISO);
+    if (!countryFullArray) {
+        return null;
+    }
+    const structuredArray = {
+        name: countryFullArray.name,
+        alpha2: countryFullArray.alpha2.toUpperCase(),
+        subCountries: [],
+        subCountry: subCountry
+    }
+    return structuredArray;
 }

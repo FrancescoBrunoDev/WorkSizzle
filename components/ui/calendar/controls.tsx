@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import SwitchOption from "@/components/ui/switchOption";
+import { Share2, Check } from "lucide-react";
 
 function handleCountryChange(value: string, setCountry: (value: any) => void, kind: "alpha2" | "subCountry") {
   setCountry((prevState: countryState) => ({
@@ -36,6 +38,10 @@ function DateSelector({ year }: { year: number }) {
       </Link>
     </div>
   );
+}
+
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text);
 }
 
 function CountrySelector({ country, setCountry, countries }: { country: string; setCountry: (value: string) => void; countries: any }) {
@@ -86,21 +92,40 @@ export default function Controls({
   setAreControlsCollapsed: (value: boolean) => void;
   areControlsCollapsed: boolean
 }) {
+  const [isShareValid, setIsShareValid] = useState(false);
+
+  useEffect(() => {
+    setIsShareValid(false);
+    const timeoutId = setTimeout(() => {
+      setIsShareValid(false);
+    }, 5000); // 5000 milliseconds = 5 seconds
+
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
+  }, [country, year]);
+
   return (
     <div className="fixed bottom-0 z-50 flex w-full flex-col items-center justify-center gap-4 md:gap-6 rounded-t-lg bg-secondary/60 px-4 pb-6 pt-4 backdrop-blur-md md:sticky md:top-20 md:w-fit md:rounded-lg md:py-4">
-      <div onClick={() => setAreControlsCollapsed(!areControlsCollapsed)} className={`bg-primary rounded-lg p-1 transition-transform md:hidden hover:cursor-pointer mb-2 ${areControlsCollapsed ? "hover:translate-y-1" : "hover:-translate-y-1"}`}>
+      <div onClick={() => setAreControlsCollapsed(!areControlsCollapsed)} className={`bg-primary h-full rounded-lg p-1 transition-transform md:hidden hover:cursor-pointer mb-2 ${areControlsCollapsed ? "hover:translate-y-1" : "hover:-translate-y-1"}`}>
         {areControlsCollapsed ? <ChevronUp size={35} color="rgb(var(--background))" /> : <ChevronDown size={35} color="rgb(var(--background))" />}
       </div>
-      <div className="flex items-center gap-3 md:flex-row flex-wrap justify-center w-full">
-        <DateSelector year={year} />
-        <CountrySelector countries={countries_ISO} country={country.alpha2} setCountry={(value) => handleCountryChange(value, setCountry, "alpha2")} />
-        {country.subCountries && country.subCountries.length > 0 && <CountrySelector countries={country.subCountries} country={country.subCountry} setCountry={(value) => handleCountryChange(value, setCountry, "subCountry")} />}
+      <div className="flex w-full justify-center">
+        <div className="flex items-center gap-3 md:flex-row flex-wrap justify-center w-full">
+          <DateSelector year={year} />
+          <CountrySelector countries={countries_ISO} country={country.alpha2} setCountry={(value) => handleCountryChange(value, setCountry, "alpha2")} />
+          {country.subCountries && country.subCountries.length > 0 && <CountrySelector countries={country.subCountries} country={country.subCountry} setCountry={(value) => handleCountryChange(value, setCountry, "subCountry")} />}
+
+          <button className={`flex ml-3 items-center relative justify-center h-11 w-11 rounded-lg hover:cursor-pointer hover:scale-102 transition-all ${isShareValid ? "bg-primary" : "bg-background"}`} >
+            <Check className={`${isShareValid ? "opacity-100 stroke-background" : "opacity-0 rotate-180"} hover:rotate-12 transition-all absolute duration-300`} size={30} />
+            <Share2 className={`${isShareValid ? "opacity-0 rotate-180" : "opacity-100"} hover:rotate-12 transition-all absolute duration-300`} color="rgb(var(--primary))" size={25} onClick={() => { setIsShareValid(true); copyToClipboard(`${window.location.origin}/${year}/${country.alpha2}${country.subCountry !== "all" ? "&" + country.subCountry : ""}`) }} />
+          </button>
+        </div>
       </div>
       <div className={`${areControlsCollapsed ? "h-0 overflow-hidden md:h-fit" : ""} flex flex-wrap gap-3 justify-center items-center`}>
         <div className="align-start flex flex-wrap items-start gap-3 flex-row md:w-fit w-full">
           <SwitchOption checked={isEven} setChecked={setIsEven} label="Make side calendar the opposite" />
           <SwitchOption checked={isRounded} setChecked={setIsRounded} label="Rounded days" />
-          <SwitchOption checked={areCalendarsCollapsed} setChecked={setAreCalendarsCollapsed} label="Hide calendars" />
+          <SwitchOption checked={areCalendarsCollapsed} setChecked={setAreCalendarsCollapsed} label="Show calendars" />
         </div>
         <div className="flex min-w-80 items-center space-x-2 w-full md:w-fit hover:bg-background rounded-lg transition-all p-2 hover:scale-102">
           <Slider
