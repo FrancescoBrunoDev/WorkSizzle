@@ -1,15 +1,14 @@
-import dynamic from "next/dynamic";
+import ClientCalendar from "@/components/ui/calendar/clientCalendar";
 
-const MainView = dynamic(() => import("@/components/ui/calendar/mainView"), {
-  ssr: false,
-});
-
-export default async function Home({ params }: { params: { year: number } }) {
+export default async function Home(props: {
+  params: Promise<{ year: number }>;
+}) {
+  const params = await props.params;
   const year = params.year;
   if (!year) {
-    throw new Error('Year not found');
+    throw new Error("Year not found");
   } else if (isNaN(year)) {
-    throw new Error('Year must be a number');
+    throw new Error("Year must be a number");
   }
-  return <MainView year={year} />;
+  return <ClientCalendar year={year} />;
 }

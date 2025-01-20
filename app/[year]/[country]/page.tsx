@@ -5,7 +5,8 @@ const MainView = dynamic(() => import("@/components/ui/calendar/mainView"), {
     ssr: false,
 });
 
-export default async function Home({ params }: { params: { year: number, country: string } }) {
+export default async function Home(props: { params: Promise<{ year: number, country: string }> }) {
+    const params = await props.params;
     const year = params.year;
     const decodedCountry = decodeURIComponent(params.country);
     const subCountry = decodedCountry.split('&')[1] || 'all';

@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import Controls from "@/components/ui/calendar/controls";
 import { Calendar } from "@/components/ui/calendar";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import { getHoliday, getSubCountries } from "@/actions/actions";
-
 
 // https://stackoverflow.com/a/23593099
 function formatDate(date: Date) {
@@ -24,8 +23,8 @@ export default function MainView({
   year,
   countryFromParams,
 }: {
-  year: number,
-  countryFromParams?: countryState
+  year: number;
+  countryFromParams?: countryState;
 }) {
   // existing state variables
   const [isRounded, setIsRounded] = useState(() =>
@@ -50,22 +49,26 @@ export default function MainView({
   );
   const [country, setCountry] = useState<countryState>(() => {
     if (countryFromParams) {
-      return countryFromParams
+      return countryFromParams;
     } else {
       return typeof window !== "undefined"
-        ? JSON.parse(localStorage.getItem("country") || '{"name": "Germany", "alpha2": "DE", "subCountries": [], "subCountry": "all"}')
+        ? JSON.parse(
+            localStorage.getItem("country") ||
+              '{"name": "Germany", "alpha2": "DE", "subCountries": [], "subCountry": "all"}',
+          )
         : {
-          name: "Germany",
-          alpha2: "DE",
-          subCountries: [],
-          subCountry: "all"
-        };
+            name: "Germany",
+            alpha2: "DE",
+            subCountries: [],
+            subCountry: "all",
+          };
     }
-
   });
 
   const [holidaysForYear, setHolidaysForYear] = useState<string[]>([]);
-  const [workingDaysInMonths, setWorkingDaysInMonths] = useState(() => Array.from({ length: 12 }, (_, i) => calculateTwentyPercentDays(i, year)));
+  const [workingDaysInMonths, setWorkingDaysInMonths] = useState(() =>
+    Array.from({ length: 12 }, (_, i) => calculateTwentyPercentDays(i, year)),
+  );
   const [areControlsCollapsed, setAreControlsCollapsed] = useState(() =>
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("areControlsCollapsed") || "false")
@@ -82,34 +85,53 @@ export default function MainView({
     );
     localStorage.setItem("percentage", JSON.stringify(percentage));
     localStorage.setItem("country", JSON.stringify(country));
-    localStorage.setItem("areControlsCollapsed", JSON.stringify(areControlsCollapsed));
-  }, [isRounded, isEven, areCalendarsCollapsed, percentage, country, areControlsCollapsed]);
+    localStorage.setItem(
+      "areControlsCollapsed",
+      JSON.stringify(areControlsCollapsed),
+    );
+  }, [
+    isRounded,
+    isEven,
+    areCalendarsCollapsed,
+    percentage,
+    country,
+    areControlsCollapsed,
+  ]);
 
   useEffect(() => {
     getHoliday(year, country).then((data) => {
-      setHolidaysForYear(data.filter((holiday: { counties: string | string[] | null; }) => holiday.counties === null || holiday.counties.includes(country.subCountry))
-        .map((holiday: { date: any; }) => {
-          return holiday.date;
-        })
+      setHolidaysForYear(
+        data
+          .filter(
+            (holiday: { counties: string | string[] | null }) =>
+              holiday.counties === null ||
+              holiday.counties.includes(country.subCountry),
+          )
+          .map((holiday: { date: any }) => {
+            return holiday.date;
+          }),
       );
       if (data.length > 0) {
         toast.success("Good news", {
-          description: "The data regarding the holidays in " + country.name + " has been updated.",
-        })
+          description:
+            "The data regarding the holidays in " +
+            country.name +
+            " has been updated.",
+        });
       } else {
         toast.error("Bad news", {
-          description: "I have no data about holidays for " + country.name + ".",
-        })
+          description:
+            "I have no data about holidays for " + country.name + ".",
+        });
       }
       getSubCountries(data).then((data) => {
-        setCountry(prevState => ({
+        setCountry((prevState) => ({
           ...prevState,
           subCountries: data,
         }));
-      })
+      });
     });
   }, [year, country.alpha2, country.subCountry]);
-
 
   function calculateTwentyPercentDays(
     month: number,
@@ -134,11 +156,13 @@ export default function MainView({
   }
 
   useEffect(() => {
-    setWorkingDaysInMonths(Array.from({ length: 12 }, (_, i) => calculateTwentyPercentDays(i, year)));
+    setWorkingDaysInMonths(
+      Array.from({ length: 12 }, (_, i) => calculateTwentyPercentDays(i, year)),
+    );
   }, [year, percentage, isRounded, country]);
 
   const isDisabledDay = (date: Date) => {
-    const localDate = `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}`;
+    const localDate = `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(-2)}-${("0" + date.getDate()).slice(-2)}`;
     if (
       date.getDay() === 0 ||
       date.getDay() === 6 ||
@@ -175,13 +199,14 @@ export default function MainView({
           return (
             <div
               key={index}
-              className={`rounded-sm border-2 flex flex-col hover:scale-101 transition-transform border-primary/50 p-4 ${index % 2 === 0
-                ? `${isEven ? "border-l-4" : "border-r-4"}`
-                : `${isEven ? "border-r-4" : "border-l-4"}`
-                }`}
+              className={`flex flex-col rounded-sm border-2 border-primary/50 p-4 transition-transform hover:scale-101 ${
+                index % 2 === 0
+                  ? `${isEven ? "border-l-4" : "border-r-4"}`
+                  : `${isEven ? "border-r-4" : "border-l-4"}`
+              }`}
             >
               <div className="grow text-center">
-                <h2 className="font-black text-2xl text-primary uppercase">
+                <h2 className="text-2xl font-black uppercase text-primary">
                   {new Date(year, index).toLocaleString("en-US", {
                     month: "long",
                   })}
@@ -195,9 +220,13 @@ export default function MainView({
                     <ul className="flex flex-wrap gap-4">
                       {monthHolidays.map((holiday, i) => {
                         const date = new Date(holiday ?? "");
-                        const isWeekend = date.getDay() === 0 || date.getDay() === 6; // 0 is Sunday, 6 is Saturday
+                        const isWeekend =
+                          date.getDay() === 0 || date.getDay() === 6; // 0 is Sunday, 6 is Saturday
                         return (
-                          <li key={i} className={`text-xs ${isWeekend ? 'line-through' : ''}`}>
+                          <li
+                            key={i}
+                            className={`text-xs ${isWeekend ? "line-through" : ""}`}
+                          >
                             {date.toLocaleString("default", {
                               day: "2-digit",
                             })}
@@ -208,7 +237,9 @@ export default function MainView({
                   </div>
                 )}
               </div>
-              <div className={`flex w-full items-center justify-center overflow-hidden ${areCalendarsCollapsed ? "h-[300px]" : "h-0"} transition-height duration-300`}>
+              <div
+                className={`flex w-full items-center justify-center overflow-hidden ${areCalendarsCollapsed ? "h-[300px]" : "h-0"} transition-height duration-300`}
+              >
                 <Calendar
                   mode="single"
                   month={new Date(year, index)}
