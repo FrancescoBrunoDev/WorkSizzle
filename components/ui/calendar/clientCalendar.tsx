@@ -6,6 +6,12 @@ const MainView = dynamic(() => import("@/components/ui/calendar/mainView"), {
   ssr: false,
 });
 
-export default function ClientCalendar({ year }: { year: number }) {
-  return <MainView year={year} />;
+export default function ClientCalendar({
+  year,
+  countryFromParams,
+}: {
+  year: number;
+  countryFromParams?: countryState;
+}) {
+  return <MainView year={year} countryFromParams={countryFromParams} />;
 }
