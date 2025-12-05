@@ -174,7 +174,7 @@ export default function MainView({
   };
 
   return (
-    <main className="container flex min-h-screen flex-col items-center gap-4 pb-72 pt-72 md:pb-12 md:pt-80">
+    <main className="container flex min-h-screen flex-col items-center gap-4 pt-72 pb-72 md:pt-80 md:pb-12">
       <Controls
         isRounded={isRounded}
         setIsRounded={setIsRounded}
@@ -199,14 +199,14 @@ export default function MainView({
           return (
             <div
               key={index}
-              className={`flex flex-col rounded-sm border-2 border-primary/50 p-4 transition-transform hover:scale-101 ${
+              className={`border-primary/50 flex flex-col rounded-sm border-2 p-4 transition-transform hover:scale-101 ${
                 index % 2 === 0
                   ? `${isEven ? "border-l-4" : "border-r-4"}`
                   : `${isEven ? "border-r-4" : "border-l-4"}`
               }`}
             >
               <div className="grow text-center">
-                <h2 className="text-2xl font-black uppercase text-primary">
+                <h2 className="text-primary text-2xl font-black uppercase">
                   {new Date(year, index).toLocaleString("en-US", {
                     month: "long",
                   })}
@@ -246,7 +246,7 @@ export default function MainView({
                   disabled={isDisabledDay}
                   ISOWeek={true}
                   disableNavigation={true}
-                  hideHead={false}
+                  hideWeekdays={false}
                 />
               </div>
             </div>
